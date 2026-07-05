@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+<head>
+<style>
+button {
+cursor: pointer;
+}
+</style>
+</head>
+<body>
+<title>Game tebak angka(Ultra mega susah extreme)</title>
+<h2>coba tebak angka 1 - 100 Mode EXTREME<h2>
+<input type="text" id="answer" placeholder="Masukan angka">
+<button onclick="submit()">Submit</button>
+<h2 id="player">Player: Masukan Angka</h2>
+<h2 id="jawaban">Jawaban: 1-100</h2>
+<h3 id="info">Tekan tombol Submit untuk memulai permainan</h3>
+<h3 id="sisaTry">:D</h3>
+</body>
+<script>
+let info = document.getElementById("info")
+let wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+let no = false
+let percobaan = 0
+let jawab = 0
+let infosLoading = ["Memproses", "Bertanya ke AI", "Makan nasi padang",
+"Mencari random", "Menghitung", "Berfikir", "Mengecek tutorial", "Menghasilkan", "Menggunakan Math.random", "Aaaaaaaa"]
+let randomfail = ["Sedikit demi sedikit, lama lama pasti hoki", "Jangan menyerah, aku sudah", "Random di game ini belum terverifikasi",
+"99% player keluar sebelum mendapatkan angkanya", "Yang dilihat hanya hasil nya, bukan usahanya", "''1/100 itu gampang'' - Dia udah nyerah",
+"Motivasi hari ini: Semangat", "Pssstt, pakai consoleee~. kalau bisa", "''game terkeren yang pernah saya mainkan'' - Orang random", "+999 LUCK OP SYSTEM UNLOCKED, SUBMIT ''ANGKA'' TO UPGRADE +999999 LUCK",
+"Kisah mengenaskan seorang programmer yang baterai hp nya mau habis(ketemu bug)"]
+
+async function submit() {
+if (no == false) {
+document.getElementById("jawaban").innerText = "Jawaban: ???"
+let input = Number(document.getElementById("answer").value)
+if (/^\d+$/.test(input)) {
+no = true
+if (percobaan == 0) {
+jawab = Math.floor(Math.random() * 100)
+console.log(jawab)
+percobaan = 4
+document.getElementById("sisaTry").innerText = "Sisa Percobaan: " + percobaan
+}
+document.getElementById("player").innerText = "Player: " + input
+await loading()
+await loading()
+await loading()
+if (jawab == input) {
+document.getElementById("jawaban").innerText = "Jawaban: "  + jawab
+info.innerText = "Anda benar!????!??!!?? Wowowowwowwww"
+await wait(1800)
+info.innerText = "Selamat."
+no = false
+} else {
+percobaan -= 1
+document.getElementById("sisaTry").innerText = "Sisa Percobaan: " + percobaan
+info.innerText = randomfail[Math.floor(Math.random() * randomfail.length)];
+await wait(4000)
+if (percobaan == 0) {
+info.innerText = "Percobaan habis, dan anda gagal TOTAL. tapi tetap, anda bisa ngulang"
+document.getElementById("jawaban").innerText = "Jawaban: "  + jawab
+no = false
+return;
+}
+if (jawab > input) {
+info.innerText = "Angka yang kamu masukan lebih KECIL dari angka yang dicari. Semangat!"
+no = false
+} else {
+info.innerText = "Angka yang kamu masukan lebih BESAR dari angka yang dicari. Semangat!"
+no = false
+}
+}
+} else {
+alert("!!!!TOLONG!!!! masukan angka saja.")
+}
+} else {
+alert("Tunggu, sabar, wait")
+}
+}
+
+async function loading() {
+let irandom = Math.floor(Math.random() * 3)
+let itimes = irandom + 2
+let inforandom = infosLoading[Math.floor(Math.random() * infosLoading.length)];
+for (let i = 0; i < itimes; i++) {
+info.innerText = inforandom + " ."
+await wait(500)
+info.innerText = inforandom + " ." + " ."
+await wait(500)
+info.innerText = inforandom + " ." + " ." + " ."
+await wait(500)
+info.innerText = inforandom
+await wait(500)
+}
+info.innerText = "Berhasil dibuat!"
+}
+</script>
+</html>
