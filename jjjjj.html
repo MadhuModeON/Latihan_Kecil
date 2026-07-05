@@ -1,0 +1,86 @@
+<!doctype html>
+<head>
+<style>
+
+button {
+width: 170px;
+height: 40px;
+cursor: pointer;
+background: blue;
+border: solid black;
+color: white;
+}
+
+#popup {
+opacity: 0;
+}
+
+</style>
+</head>
+<body>
+<h1>Cek CONSOLE</h1>
+<button onclick="naiklv()">+1 LEVEL</button>
+<div id="level">Level: 1</div>
+<div id="damage">Damage: 1</div>
+<h3 id="rank">RANK: Omega Noob</h3>
+<h3 id="popup">+1 Level</h3>
+
+</body>
+<script>
+const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+let nama = "Windah Batubara";
+let umur = 999;
+let damage = 67;
+let level = 1
+let rank = "Noob"
+let stack = 0
+let lastaction = Date.now()
+console.log("halo gua", nama, "\numur saya",  umur);
+console.log("lah boss cuma", damage, "Damage", "\nkalo gua mah udah level", level)
+
+
+function naiklv() {
+let sekarang = Date.now()
+level += 1
+stack += 1
+damage = 67 * level
+if (level >= 1000) {
+rank = "GOD"
+update()
+} else if (level >= 250) {
+rank = "Hacker"
+update()
+} else if (level >= 100) {
+rank = "Master"
+update()
+} else if (level >= 50) {
+rank = "Pro"
+update()
+} else {
+rank = "Noob"
+}
+if (sekarang - lastaction > 2000 && stack !== 1) {
+fadeout();
+}
+update();
+lastaction = sekarang;
+}
+
+async function fadeout() {
+for (let i = 100; i > 0; i--) {
+await wait(10)
+document.getElementById("popup").style.opacity = i / 100
+console.log("jalan")
+}
+stack = 0
+}
+
+function update() {
+document.getElementById("level").innerText = "Level: " + level
+document.getElementById("damage").innerText = "Damage: " + damage
+document.getElementById("rank").innerText = "RANK: " + rank
+document.getElementById("popup").innerText = "--[ +" + stack + " LEVEL ]--"
+document.getElementById("popup").style.opacity = 1
+}
+</script>
+</html>
