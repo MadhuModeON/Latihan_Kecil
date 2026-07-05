@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+    font-family: Arial;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    margin: 0;
+    padding: 20px;
+}
+
+/* UI UTAMA / MENU ATAS */
+#hpbar {
+    width: 350px; /* Diperlebar agar teks muat dengan baik */
+    height: 25px; 
+    border: 3px solid black;
+    background: red;
+    margin: 10px auto;
+    /* Pengaturan teks di dalam HP Bar agar berada di tengah */
+    color: white;
+    font-weight: bold;
+    line-height: 25px; 
+}
+
+/* Wadah tombol agar berjejer ke samping di bawah HP Bar */
+.menu-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+button {
+    width: 100px;
+    height: 35px;
+    border: 3px solid black;
+    background: #ff4d4d;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #cc0000; /* Efek warna saat mouse diarahkan ke tombol */
+}
+
+/* UI UTAMA (SHOP) */
+#shop {
+    width: 350px;
+    height: 400px;
+    border: 3px solid black;
+    padding: 10px;
+    position: relative;
+    background: #e0f0ff;
+    display: none; /* Awalnya tersembunyi */
+}
+
+#rebirth {
+    width: 350px;
+    height: 320px;
+    border: 3px solid black;
+    padding: 10px;
+    position: relative;
+    background: white;
+    display: none; /* Awalnya tersembunyi */
+}
+
+/* tombol item */
+.item {
+    padding: 10px;
+    margin: 5px;
+    border: 1px solid black;
+    cursor: pointer;
+    background: white;
+}
+
+.reb {
+    padding: 10px;
+    margin: 5px;
+    border: 1px solid black;
+    cursor: pointer;
+    background: blue;
+}
+
+/* UI DALAM UI (DETAIL PANEL) */
+#detail {
+    position: absolute;
+    right: 45px;
+    top: 10px;
+    width: 250px;
+    height: 280px;
+    border: 2px solid black;
+    background: yellow;
+    display: none;
+    padding: 10px;
+    z-index: 10;
+}
+
+#detailReb {
+    position: absolute;
+    right: 45px;
+    top: 10px;
+    width: 250px;
+    height: 280px;
+    border: 2px solid black;
+    background: white;
+    display: none;
+    padding: 10px;
+    z-index: 10;
+}
+
+/* Gaya untuk tombol tutup shop */
+.close-shop-btn {
+    margin-top: 15px;
+    cursor: pointer;
+    background: #ffcccc;
+    padding: 5px 15px;
+    border: 1px solid red;
+    display: inline-block;
+    font-weight: bold;
+}
+</style>
+</head>
+<body>
+
+<h1>THE COMEBACK</h1>
+
+<!-- 1. HP BAR (Paling atas & otomatis tengah) -->
+<div id="hpbar">HP: 100 / 100</div>
+<div id="level">Lv: 1</div>
+<div id="xp">XP: 0/5</div>
+<div id="poin">Poin: 0</div>
+<div id="damage">DAMAGE: 0</div>
+
+
+<!-- 2. MENU UTAMA (Tepat di bawah HP Bar) -->
+<div class="menu-buttons">
+    <button onclick="Attack()">Attack</button>
+    <button onclick="openShop()">Open Shop</button>
+    <button onclick="rebirth()">Rebirth</button>
+</div>
+
+<!-- 3. PANEL SHOP -->
+<div id="shop">
+    <h3>Shop Items</h3>
+    <div class="item" onclick="showItem(items[0].name, items[0].damage, items[0].damageP, items[0].price, 'Sampah', 0)">
+Sword
+</div>
+
+<div class="item" onclick="showItem(items[1].name, items[1].damage, items[1].damageP, items[1].price, 'agak sampah', 1)">
+Axe
+</div>
+
+<div class="item" onclick="showItem(items[2].name, items[2].damage, items[2].damageP, items[2].price, 'Mencabut nyawa', 2)">
+OmniReaper
+</div>
+
+<div class="item" onclick="showItem(items[3].name, items[3].damage, items[3].damageP, items[3].price, 'Ultra sampah?', 3)">
+Ranting Kayu
+</div>
+
+<div class="item" onclick="showItem(items[4].name, items[4].damage, items[4].damageP, items[4].price, 'Ultra sampah?', 4)">
+Pentungan TungTungSahur
+</div>
+    
+    <div class="close-shop-btn" onclick="closeShop()">X Close Shop</div>
+
+    <!-- UI DETAIL DI DALAM SHOP -->
+    <div id="detail">
+        <h4 id="itemName">Item</h4>
+        <p id="itemDamage">Damage</p>
+        <p id="DamageP">DamageP</p>
+        <p id="cost">DamageP</p>
+        <p id="Description">Description</p>
+        <button onclick="buyItem()" style="background: green; color: white;">Buy</button>
+        <button id="buyMAX" onclick="buyitemmax()" style="background: red; color: white;">Buy MAX</button>
+        <button onclick="closeDetail()" style="background: gray; color: white;">X</button>
+    </div>
+</div>
+<div id="rebirth">
+<h4>Rebirth Menu</h4>
+<p id="Stat1">2× DamageMultiplier</p>
+<p id="Stat2">2× XP Boost</p>
+<div class="reb" onclick="rebirthconfirm()">
+<p id="rebcost">Get Level 5 to Rebirth!</p>
+
+<script>
+let damage = 1000;
+let damageboost = 1;
+let damagemult = 1;
+let finaldamage = 1;
+let maxhp = 100;
+let hp = 100;
+let dead = 0;
+let poin = 0;
+let currentItem = "";
+let selectedIndex = 0;
+let xp = 0;
+let xpneed = 5
+let level = 1;
+let xpboost = 1;
+let rebirthcost = 10;
+
+
+let items = [
+    {
+        name: "Sword",
+        damage: 10,
+        damageP: 0.1,
+        price: 2,
+        baseprice: 2
+    },
+    {
+        name: "Axe",
+        damage: 20,
+        damageP: 0.4,
+        price: 5,
+        baseprice: 5,
+    },
+    {
+        name: "OmniReaper",
+        damage: 2*10**28,
+        damageP: 6.66,
+        price: 2*10**10,
+        baseprice: 2*10**10
+        },
+        {
+        name: "Ranting Kayu",
+        damage: -162627,
+        damageP: 0.04,
+        price: 0.000000000000002,
+        baseprice: 0.000000000000002
+        },
+        {
+        name: "Pentungan TungTungSahur",
+        damage: 200000000,
+        damageP: -0.8,
+        price: 100000000,
+        baseprice: 100000000
+    }
+];
+
+function showItem(name, dmg, dmgP, cost, desc, index) {
+    currentItem = name;
+    selectedIndex = index;
+    document.getElementById("detail").style.display = "block";
+    document.getElementById("itemName").innerText = name;
+    document.getElementById("itemDamage").innerText = "Damage: " + dmg;
+    document.getElementById("DamageP").innerText = dmgP + "×" + " Damage";
+    document.getElementById("cost").innerText = "Cost: " + formatNumber(cost) + " Poin";
+    document.getElementById("Description").innerText = desc;
+}
+
+function closeDetail() {
+    document.getElementById("detail").style.display = "none";
+}
+
+function closeShop() {
+    document.getElementById("shop").style.display = "none";
+    document.getElementById("detail").style.display = "none";
+}
+
+//--------------------------------------------\\
+//---------------BUY ITEM---------------||
+//--------------------------------------------\\
+function buyItem() {
+let item = items[selectedIndex];
+if (buyMaxEnabled == true && poin >= item.price) {
+let tcost = 0
+let r = 1.5;
+let P = item.price;
+let M = poin;
+let n = Math.floor(
+    Math.log(M * (r - 1) / P + 1) / Math.log(r)
+);
+tcost = P * (Math.pow(r, n) - 1) / (r - 1);
+item.price *= n ** 1.2
+poin -= tcost
+damage += item.damage * n
+damagemult += item.damageP * n
+document.getElementById("cost").innerText = "Cost: " + formatNumber(item.price) + " Poin";
+updateUI()
+alert("Kamu membeli" + n + "Axe" +
+"\nTotal Harga: " + tcost);
+}
+else if (buyMaxEnabled == false && poin >= item.price) {
+poin -= item.price
+damage += item.damage
+damagemult += item.damageP
+item.price *= 1.2
+document.getElementById("cost").innerText = "Cost: " + formatNumber(item.price) + " Poin";
+updateUI()
+    alert("Kamu membeli: " + item.name + 
+          "\nDamage: " + item.damage + 
+          "\nDamage Mult: " + item.damageP + "×" +
+          "\nHarga: " + formatNumber(item.price));
+} else {
+alert("poin tidak cukup")
+}
+}
+
+let buyMaxEnabled = false;
+
+function buyitemmax() {
+    let buyMax = document.getElementById("buyMAX");
+
+    buyMaxEnabled = !buyMaxEnabled;
+
+    if (buyMaxEnabled) {
+        buyMax.style.backgroundColor = "green";
+    } else {
+        buyMax.style.backgroundColor = "red";
+    }
+}
+
+function Attack() {
+damagemult = damagemult * damageboost
+finaldamage = damage * damagemult
+hp -= finaldamage
+updateUI()
+if (hp <= 0) {
+document.getElementById("hpbar").innerText = "HP: " + 0 + "/" + formatNumber(maxhp);
+maxhp = maxhp * 1.5
+hp = maxhp
+poin += maxhp * 0.01
+xp += Math.floor(
+    Math.random() * ((maxhp * level * 0.01) - (maxhp * level * 0.05) + 1)
+) + (maxhp * level * 0.05) * xpboost
+}
+if (xp >= xpneed) {
+while (xp >= xpneed) {
+xp -= xpneed
+xpneed *= 15
+damage += level * 10
+level += 1
+updateUI()
+}
+}
+}
+
+
+
+function formatNumber(num) {
+
+    let suffixes = ["", "K", "M", "B", "T", "Qa", "Qi", "Sx",
+"Sp", "Oc", "No", "Googol", "Skibidi", "tungsahur",
+"berpatapim", "ohio", "okegas", "last", "hidup",
+"jokowi", "tungtung", "sahur", "gue ketika", "batu",
+"batuakik", "makandi", "gacoan", "tower", "obby",
+"roblox", "semoga", "aura", "$$$", "pure aura",
+"gueketika43km", "gowes", "tom", "trollface", "troll",
+"gameaura", "sans", "whenisteponthelego", "sigma", "moment",
+"robloxstudio", "flowstate", "focus", "electric", "sigmaboy",
+"cityboy", "redmi13", "modeON", "modeAktif", "dinyalakan",
+"gueketikabedugul", "danau", "beratan", "thomas", "alvaEdison",
+"AlbertEinstein", "thomasAlphaWolf", "AlbertEpstesen", "Ngaco", "pinjam100",
+"SmallNumber", "Indonesia", "SdmTinggi", "Oke", "komet",
+"editanKece", "jj jokowi", "jedag-jedug", "dimakimaki", "sayadiam",
+"dijelekjelekan", "sayadiamlagi", "tapi sekarang", "di bali", "saya akan lawan!",
+"3juta", "like", "subscribe", "tiktokViral", "youtubeSusah",
+"susahViral", "happy", "birthday", "daniel", "take a screenshot",
+"even the stairs", "never ends", "we keep climbing", "daniel 0", "daniell",
+"Suffix", "Gajelas", "No777", "KalauAndaBaca", "IniSemua",
+"BerartiAnda", "GabutGaKaruan", "SimpelLan", "SigmaMode", "KetikaGua",
+"ModeOnAkrif", "DinyalakanDilaksanakan", "Dan Dilakukan", "Dengan Baik", "Dan Benar",
+"SixSEVEN", "Pilih kontrol Mama", "atau", "Kontrol adek", "🤨",
+"jadi gini", "sekarang", "67", "damn", "Sixseven",
+"1", "2", "3", ".", "CaraBaca",
+"sendal jepit", "Malware", "GoogolPlex", "sengion pex", "porblox rorn",
+"#", "Hello world(''Print'')", "12345", "qwerty", "ultramegasound",
+"Tomas alfa edisound", "dj babad remix", "ayo", "join", "rpl",
+"python", "JavaScript", "dan Brainfuck", "okemaaf", "o_o",
+":3", ":D", ":d", "-_-", "xX((:-++H++:))Xx", 
+"finale", "+++++++", "_-__-____-__-_", "last for last", "the end",
+"+1000Aura"];
+
+    let index = 0;
+
+    while (num >= 1000 && index < suffixes.length - 1) {
+        num /= 1000;
+        index++;
+    }
+
+    return num.toFixed(1) + suffixes[index];
+}
+
+
+
+function openShop() {
+    let shop = document.getElementById("shop");
+    let reb = document.getElementById("rebirth");
+    let currentDisplay = window.getComputedStyle(shop).display;
+    if (currentDisplay === "none") {
+        shop.style.display = "block";
+        reb.style.display = "none";
+    } else {
+        shop.style.display = "none";
+    }
+}
+
+function rebirth() {
+    let reb = document.getElementById("rebirth");
+    let shop = document.getElementById("shop");
+    let currentDisplay = window.getComputedStyle(reb).display;
+    if (currentDisplay === "none") {
+        reb.style.display = "block";
+        shop.style.display = "none";
+        updateUI()
+    } else {
+        reb.style.display = "none";
+    }
+}
+
+function rebirthconfirm() {
+if (level >= rebirthcost) {
+reset()
+rebirthcost += 10
+damageboost *= 2
+xpboost *= 2
+updateUI()
+} else {
+alert("DARI MANA DUITNYA")
+}
+}
+
+function updateUI() {
+document.getElementById("hpbar").innerText = "HP: " + formatNumber(hp) + "/" + formatNumber(maxhp)
+document.getElementById("poin").innerText = "Poin: " + formatNumber(poin)
+document.getElementById("level").innerText = "LV: " + level;
+document.getElementById("xp").innerText = "XP: " + formatNumber(xp) + "/" + formatNumber(xpneed)
+document.getElementById("damage").innerText = "DAMAGE: " + formatNumber(finaldamage) + "(" + formatNumber(damage) + " × " + formatNumber(damagemult) + ")"
+document.getElementById("Stat2").innerText = "Current XP Boost: ×" + xpboost
+if (level >= rebirthcost) {
+document.getElementById("rebcost").innerText = "You can Rebirth now!";
+} else {
+document.getElementById("rebcost").innerText = "Get Level " + rebirthcost + " to Rebirth!";
+}
+}
+
+function reset() {
+damage = 10;
+maxhp = 100;
+hp = 100;
+dead = 0;
+poin = 0;
+xp = 0;
+xpneed = 5;
+damagemult = 1;
+level = 1;
+for (let item of items) {
+        item.price = item.baseprice;
+        }
+}
+</script>
+
+
+</html>
