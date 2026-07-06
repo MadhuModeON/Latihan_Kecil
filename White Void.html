@@ -1,0 +1,125 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kekosongan</title>
+
+<style>
+button {
+width: 100px;
+cursor: pointer;
+color: black;
+}
+#name2 {
+margin-top: 10px;
+}
+#textrandom {
+opacity: 1;
+}
+</style>
+</head>
+<body>
+<h3 id="textrandom">Selamat datang di kekosongan tampa akhir</h3>
+<input type="text" id="name" placeholder="Masukan sesuatu..?">
+<button onclick="add()" >Tambahkan</button>
+<input type="text" id="name2" placeholder="Void">
+<button onclick="del()" >Buang</button>
+
+<h3 id="item">Kosong</h3>
+
+</body>
+<script>
+let items = ["Kosong\n"]
+let itemText = document.getElementById("item")
+let input = document.getElementById("name")
+let input2 = document.getElementById("name2")
+let yes = false
+let tips = ["'Kamu seharusnya tidak disini'", "'halo 'player''", "'Kamu dapat menambah apa pun, dan juga sebaliknya'", "Ini nyata", "kebosanan akan menghantui mu", "Apa yang dilakukan maha kuasa jika sudah segalanya?", "Mungkin kamu hanya salah satu dari mereka",
+"'tak terbatas, ini lah dunia nya'", "'Jangan sentuh sembarangan'", "'pernah dengar? orang memilih mengeklik tombol setrum yang jelas sakit dari pada diam 1 jam'", "'Apa yang dilakukan mahkluk dengan pemikiran bertahan hidup jika diberikan segalanya?'",
+"'Kamu tidak menghapus, kamu membuang'", "'kesepian? buat sesuatu'", "aneh kenapa aku disini?",  "kalau seseorang dengar ini itemsplayer1.2+e99e99e23 is not defined", "PS5", "1 juta robux", "Apakah ada yang bisa baca ini?"]
+let wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+let tiptext = document.getElementById("textrandom")
+let itemsss = ["Kosong\n", "player\n"]
+tip()
+
+
+function add() {
+if (input.value !== "") {
+items.push(input.value + "\n")
+itemsss.push(input.value + "\n")
+if (yes == false) {
+itemText.innerText = items.join(" ");
+} else {
+itemText.innerText = itemsss.join(" ");
+}
+console.log(items)
+} else {
+alert("Menambah kekosongan ke dalam kekosongan... Menarik")
+}
+}
+
+function del() {
+let selecteditem = items.indexOf(input2.value + "\n");
+let selecteditemsss = itemsss.indexOf(input2.value + "\n");
+console.log(selecteditemsss)
+if (selecteditemsss !== -1 && yes == true) {
+if (input2.value == "player") {
+alert("Kamu kembali ke tempat yang sama")
+} else {
+alert("Entah kenapa dia kembali")
+return;
+}
+}
+if (selecteditem !== -1 && selecteditemsss !== -1) {
+console.log("on");
+items.splice(selecteditem, 1)
+itemText.innerText = items.join(" ")
+} else if (input2.value == "player" && yes == false) {
+yes = true
+document.body.style.background = "black";
+tiptext.style.color = "white"
+itemText.style.color = "white"
+console.log("on")
+tiptext.innerText = "Semuanya berakhir disini"
+tiptext.style.opacity = 1
+itemText.innerText = itemsss.join(" ")
+} else {
+alert("itu tidak ada")
+}
+}
+
+async function tip() {
+while (yes == false) {
+let randomtips = Math.floor(Math.random() * tips.length)
+console.log(randomtips)
+await wait(10000)
+await fadeout()
+if (yes == true) {
+return;
+}
+tiptext.innerText = tips[randomtips]
+await fadein()
+}
+}
+async function fadein() {
+for (let i = 0; i < 100; i++) {
+if (yes == true) {
+return;
+}
+tiptext.style.opacity = i / 100
+await wait(10)
+}
+}
+async function fadeout() {
+for (let i = 100; i > 0; i--) {
+if (yes == true) {
+return;
+}
+tiptext.style.opacity = i / 100
+await wait(10)
+}
+}
+
+</script>
+</html>
