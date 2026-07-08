@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+<head>
+<title>Quest simulator HD</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+button {
+color: black;
+cursor: pointer;
+width: 120px;
+}
+</style>
+</head>
+<body>
+<h2>Quest simulator 3D<h2>
+<input type="text" id="name" placeholder="Masukan Quest">
+<button onclick="add()">Masukan</button>
+<input type="text" id="name2" placeholder="Masukan nama Quest">
+<button onclick="cancel()">Batalkan Quest</button>
+<div id="textquest">-</div>
+
+</body>
+<script>
+let quest = []
+let input = document.getElementById("name")
+let input2 = document.getElementById("name2")
+
+function update() {
+let text = ""
+for (let i = 0; i < quest.length; i++) {
+text += (i + 1) + ". " + quest[i] + "\n"
+document.getElementById("textquest").innerText = text
+}
+}
+
+
+function add() {
+if (input.value !== "") {
+quest.push(input.value)
+console.log(input.value)
+update()
+} else {
+alert("Masih kosong, masukan sesuatu!")
+}
+}
+function cancel() {
+let selected = quest.indexOf(input2.value)
+console.log(selected)
+if (selected !== -1)  {
+quest.splice(selected, 1)
+update()
+} else {
+alert("Tidak ada quest dengan nama itu")
+}
+}
+
+</script>
+</html>
