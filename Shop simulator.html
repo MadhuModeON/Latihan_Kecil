@@ -27,14 +27,15 @@ display: none;
 margin-top: 10px;
 }
 .shopbutton {
-width: 340px;
+width: 350px;
 height: 20px;
 cursor: pointer;
 background: black;
 border: 2px solid gray;
-margin: 10px;
+margin: 2px;
 color: white;
 font-Size: 16px;
+display: inline-block;
 }
 #itembox {
 width: 300px;
@@ -83,10 +84,6 @@ font-Size: 20px;
 <button onclick="openinventory()">Check Items</button>
 <div id="shop">
 <h2>The Shop</h2>
-<div class="shopbutton" onclick="showitem(items[0].name, items[0].damage, items[0].price, items[0].desc, 0)">Sarung Tangan Thanos FULL Stone mode ON</div>
-<div class="shopbutton" onclick="showitem(items[1].name, items[1].damage, items[1].price, items[1].desc, 1)">Prabowo 1000 Hektar sawit Domain Skill</div>
-<div class="shopbutton" onclick="showitem(items[2].name, items[2].damage, items[2].price, items[2].desc, 2)">Sendal jepit(100% akurasi enchanted)</div>
-<div class="shopbutton" onclick="showitem(items[3].name, items[3].damage, items[3].price, items[3].desc, 3)">while (true) {}</div>
 </div>
 
 <div id="itembox">
@@ -136,6 +133,12 @@ name: "while (true) {}",
 damage: 1 * 10 ** 99 ** 99,
 price: 4050000,
 desc: "4 juta buat beli hp, 50 ribu beli kouta",
+},
+{
+name: "Motivasi",
+damage: -167,
+price: 0,
+desc: "Bagus untuk memulai konsistensi",
 }
 ]
 
@@ -164,18 +167,33 @@ let shp = document.getElementById("shop")
 let inv = document.getElementById("invenbox")
 if (shp.style.display === "block") {
 shp.style.display = "none"
+for (let i = 0; i < items.length; i++) {
+let button = document.getElementById("button" + i)
+button.remove();
+}
 } else {
 shp.style.display = "block"
+for (let i = 0; i < items.length; i++) {
+const button = document.createElement("buttonshop")
+button.id = "button" + i
+button.className = "shopbutton"
+button.innerText = items[i].name
+button.onclick = function() {
+showitem(i)
+}
+const group = document.getElementById("shop");
+group.appendChild(button);
+}
 inv.style.display = "none"
 }
 }
 
-function showitem(name, damage, price, desc, index) {
+function showitem(index) {
 selecteditem = index
-document.getElementById("itemname").innerText = name;
-document.getElementById("itemdamage").innerText = "Damage: " + damage;
-document.getElementById("itemprice").innerText = "Harga: " + price;
-document.getElementById("itemdesc").innerText = desc;
+document.getElementById("itemname").innerText = items[selecteditem].name;
+document.getElementById("itemdamage").innerText = "Damage: " + items[selecteditem].damage;
+document.getElementById("itemprice").innerText = "Harga: " + items[selecteditem].price;
+document.getElementById("itemdesc").innerText = items[selecteditem].desc;
 document.getElementById("itembox").style.display = "block";
 }
 
@@ -198,11 +216,13 @@ alert("Error203: Miskin")
 }
 
 function pinjam() {
-input = parseInt(document.getElementById("atm").value)
+let input = parseInt(document.getElementById("atm").value)
 if (input >= 1) {
 rupiah += input
 alert(input + " Rupiah Berhasil di pinjam!")
 update()
+} else {
+alert("---( 0 )--- RUPIAH BERHASIL DI TAMBAHKAN(GRATISSSSSS)")
 }
 }
 
