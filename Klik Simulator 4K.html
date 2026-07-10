@@ -1,0 +1,154 @@
+<!doctype html>
+<html>
+<head>
+<title>Klik simulator 4K</title>
+<style>
+button {
+width: 390px;
+height: 100px;
+cursor: pointer;
+background: black;
+color: white;
+position: absolute;
+top: 480px;
+left: 1.5px;
+}
+#text {
+width: 387px;
+height: 33px;
+background: white;
+border: 3px solid black;
+position: absolute;
+top: -23px;
+Left: 0px;
+text-align: center;
+}
+.upgrade1-10 {
+width: 150px;
+height: 20px;
+background: red;
+border: 2px solid black;
+cursor: pointer;
+font-Size: 20px;
+margin-top: 30px;
+}
+#save {
+width: 100px;
+height: 30px;
+background: blue;
+border: 3px solid black;
+cursor: pointer;
+color: white;
+font-Size: 30px;
+text-align: center;
+position: absolute;
+top: 740px;
+left: 290px
+}
+</style>
+</head>
+<body>
+<h1 id="text">0</h1>
+<button id="button">+0</button>
+<div id="up1" class="upgrade1-10" style="margin-top: 40px;">+1 Per-Klik</div>
+<div id="up2" class="upgrade1-10">+1 Multiplier</div>
+<div id="save">SAVE</div>
+</body>
+<script>
+let wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+let button = document.getElementById("button")
+let text = document.getElementById("text")
+let upbutton1 = document.getElementById("up1")
+let upbutton2 = document.getElementById("up2")
+let klik = 1
+let perklik = 0
+let mult1 = 1
+let costs = {
+cost1: 1,
+cost2: 2399
+};
+loaddata()
+update()
+
+function update() {
+text.innerText = klik;
+document.getElementById("up1").innerText = "+1 Per-Klik\n" + "Harga: " + costs.cost1
+document.getElementById("up2").innerText = "+1 Multiplier\n" + "Harga: " + costs.cost2
+document.getElementById("button").innerText = "+" + (perklik * mult1)
+for (let i = 1; i < (Object.keys(costs).length + 1); i++) {
+if (costs["cost" + i] <= klik) {
+document.getElementById("up" + i).style.background = "green";
+} else {
+document.getElementById("up" + i).style.background = "red";
+}
+}
+}
+
+function loaddata() {
+if (!Number.isNaN(parseInt(localStorage.getItem("klikdata")))) {
+klik = parseInt(localStorage.getItem("klikdata"));
+perklik = parseInt(localStorage.getItem("perklikdata"));
+mult1 = parseInt(localStorage.getItem("mult1data"));
+for (let i = 1; i < (Object.keys(costs).length + 1); i++) {
+costs["cost" + i] = parseInt(localStorage.getItem("costup" + i));
+}
+} else {
+}
+}
+
+
+let issaving = false
+let savebutton = document.getElementById("save")
+save.addEventListener("click", async function savedata() {
+if (issaving) {
+return;
+}
+issaving = true
+localStorage.setItem("klikdata", klik);
+localStorage.setItem("perklikdata", perklik);
+localStorage.setItem("mult1data", mult1);
+for (let i = 1; i < (Object.keys(costs).length + 1); i++) {
+localStorage.setItem(("costup" + i), costs["cost" + i]);
+}
+savebutton.innerText = "SAVED";
+savebutton.style.background = "green";
+console.log("Data saved");
+await wait(5000);
+savebutton.innerText = "SAVE";
+savebutton.style.background = "blue";
+issaving = false
+});
+
+
+//--- KLIK
+button.addEventListener("click", function() {
+let totalperklik = perklik * mult1;
+klik += totalperklik;
+update();
+console.log(totalperklik)
+});
+
+
+
+//---- UPGRADES
+upbutton1.addEventListener("click", function() {
+if (klik >= costs.cost1) {
+klik -= costs.cost1;
+perklik += 1;
+costs.cost1 += 20
+update();
+}
+});
+
+upbutton2.addEventListener("click", function() {
+if (klik >= costs.cost2) {
+klik -= costs.cost2;
+costs.cost2 = Math.floor(costs.cost2 * 1.3)
+mult1 += 1;
+update();
+}
+});
+
+
+</script>
+</html>
