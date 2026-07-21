@@ -1,0 +1,293 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+canvas {
+    border: 2px solid black;
+    background: lightblue;
+}
+button {
+width: 50px;
+height: 50px;
+position: fixed;
+}
+#hp {
+color: red;
+position: fixed;
+top: 20px;
+left: 310px;
+}
+</style>
+</head>
+<body>
+
+<canvas id="game" width="370" height="1800"></canvas>
+<button id="left" style="top: 690px; left: 20px;">⬅️</button>
+<button id="right" style="top: 690px; left: 140px;">➡️</button>
+<button id="down" style="top: 690px; left: 80px;">⬇️</button>
+<button id="up" style="top: 630px; left: 80px;">⬆️</button>
+<button id="push" style="top: 660px; left: 270px; height: 80px; width: 80px; background: red;">💀😈💀</button>
+<div id="hp">HP</div>
+
+<script>
+let canvas = document.getElementById("game");
+let ctx = canvas.getContext("2d");
+
+let player = {
+x: 0,
+y: 0,
+width: 50,
+height: 50,
+}
+let wall = {
+x: 100,
+y: 200,
+width: 200,
+height: 50,
+}
+let enemy = {
+x: 200,
+y: 50,
+width: 50,
+height: 50,
+}
+let hitbox = {
+x: 0,
+y: 0,
+width: 50,
+height: 50,
+}
+let x = 0;
+let hp = 1000
+let direction = 1
+let wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+setInterval(function () {
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "red";
+    
+    if (direction == 5) {
+    ctx.fillText("↙️", player.x - 20, player.y + 68);
+    } else if (direction == 6) {
+    ctx.fillText("↘️", player.x + 58, player.y + 68);
+    } else if (direction == 7) {
+    ctx.fillText("↖️", player.x - 20, player.y - 10);
+    } else if (direction == 8) {
+    ctx.fillText("↗️", player.x + 58, player.y - 10);
+    } else if (direction == 1) {
+    ctx.fillText("⬇️", player.x + 18, player.y + 70);
+    } else if (direction == 2) {
+    ctx.fillText("⬆️", player.x + 18, player.y - 10);
+    } else if (direction == 3) {
+    ctx.fillText("⬅️", player.x - 20, player.y + 28);
+    } else if (direction == 4) {
+    ctx.fillText("➡️", player.x + 62, player.y + 28);
+    }
+    console.log(direction)
+    
+    ctx.fillRect(player.x, player.y, player.width, player.height);
+    ctx.fillStyle = "blue";
+    ctx.fillRect(wall.x, wall.y, wall.width, wall.height);
+    ctx.fillStyle = "purple";
+    ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+    
+    if (mousedown && mouseleft) {
+    player.y += 1
+    player.x -= 1
+    direction = 5
+    } else if (mousedown && mouseright) {
+    player.y += 1
+    player.x += 1
+    direction = 6
+    } else if (mouseup && mouseleft) {
+    player.y -= 1
+    player.x -= 1
+    direction = 7
+    } else if (mouseup && mouseright) {
+    player.y -= 1
+    player.x += 1
+    direction = 8
+    } else if (mousedown) {
+    player.y += 1
+    direction = 1
+    } else if (mouseup) {
+    player.y -= 1
+    direction = 2
+    } else if (mouseleft) {
+    player.x -= 1
+    direction = 3
+    } else if (mouseright) {
+    player.x += 1
+    direction = 4
+    }
+    
+    
+    if (player.x > enemy.x) {
+    enemy.x += Math.random() + 0.3
+    } else if (player.x < enemy.x) {
+    enemy.x -= Math.random() + 0.3
+    }
+    if (player.y > enemy.y) {
+    enemy.y += Math.random() + 0.3
+    } else if (player.y < enemy.y) {
+    enemy.y -= Math.random() + 0.3
+    }
+    
+    
+    if (
+        player.x < wall.x + wall.width &&
+        player.x + player.width > wall.x &&
+        player.y < wall.y + wall.height &&
+        player.y + player.height > wall.y
+    ) {
+        console.log("COLLISION!");
+        player.x = 0
+        player.y = 0
+    }
+    if (
+        player.x < enemy.x + enemy.width &&
+        player.x + player.width > enemy.x &&
+        player.y < enemy.y + enemy.height &&
+        player.y + player.height > enemy.y
+    ) {
+        hp -= 1
+    }
+    
+    if (
+        hitbox.x < enemy.x + enemy.width &&
+        hitbox.x + hitbox.width > enemy.x &&
+        hitbox.y < enemy.y + enemy.height &&
+        hitbox.y + hitbox.height > enemy.y && hit
+    ) {
+    pushskill()
+    }
+update()
+}, 10);
+let hit = false
+let cooldown = false
+let push = document.getElementById("push")
+push.addEventListener("click", async function() {
+if (cooldown == false) {
+cooldown = true
+ctx.fillStyle = "red"
+
+//direction hit
+if (direction == 1) {
+hitbox.x = player.x
+hitbox.y = player.y + 60
+} else if (direction == 2) {
+hitbox.x = player.x
+hitbox.y = player.y - 60
+} else if (direction == 3) {
+hitbox.x = player.x - 60
+hitbox.y = player.y
+} else if (direction == 4) {
+hitbox.x = player.x + 60
+hitbox.y = player.y
+} else if (direction == 5) {
+hitbox.x = player.x - 60
+hitbox.y = player.y + 60
+} else if (direction == 6) {
+hitbox.x = player.x + 60
+hitbox.y = player.y + 60
+} else if (direction == 7) {
+hitbox.x = player.x - 60
+hitbox.y = player.y - 60
+} else if (direction == 8) {
+hitbox.x = player.x + 60
+hitbox.y = player.y + 60
+}
+
+ctx.fillRect(hitbox.x, hitbox.y, hitbox.width, hitbox.height)
+hit = true
+await wait(10)
+hit = false
+await wait(500)
+cooldown = false
+console.log("nocd")
+}
+});
+
+let ispush = false
+async function pushskill() {
+if (ispush == false) {
+ispush = true
+let currentdir = direction
+for (let i = 100; 0 < i; i--) {
+if (currentdir == 1) {
+enemy.y += i / 25
+} else if (currentdir == 2) {
+enemy.y -= i / 25
+} else if (currentdir == 3) {
+enemy.x -= i / 25
+} else if (currentdir == 4) {
+enemy.x += i / 25
+} else if (currentdir == 5) {
+enemy.x -= i / 25
+enemy.y += i / 25
+} else if (currentdir == 6) {
+enemy.x += i / 25
+enemy.y += i / 25
+} else if (currentdir == 7) {
+enemy.x -= i / 25
+enemy.y -= i / 25
+} else if (currentdir == 8) {
+enemy.x += i / 25
+enemy.y -= i / 25
+}
+await wait(10)
+} //loop
+} else {
+return;
+}
+ispush = false
+}
+
+function update() {
+document.getElementById("hp").innerText = "HP: " + hp
+}
+
+let mousedown = false
+let down = document.getElementById("down")
+down.addEventListener("pointerdown", function() {
+mousedown = true
+console.log("down")
+});
+down.addEventListener("pointerup", function() {
+mousedown = false
+});
+
+let mouseleft = false
+let left = document.getElementById("left")
+left.addEventListener("pointerdown", function() {
+mouseleft = true
+});
+left.addEventListener("pointerup", function() {
+mouseleft = false
+});
+
+let mouseright = false
+let right = document.getElementById("right")
+right.addEventListener("pointerdown", function() {
+mouseright = true
+});
+right.addEventListener("pointerup", function() {
+mouseright = false
+});
+
+let mouseup = false
+let up = document.getElementById("up")
+up.addEventListener("pointerdown", function() {
+mouseup = true
+});
+up.addEventListener("pointerup", function() {
+mouseup = false
+});
+
+</script>
+
+</body>
+</html>
