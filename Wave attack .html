@@ -1,0 +1,436 @@
+<!doctype html>
+<html>
+<head>
+<style>
+body {
+background: purple;
+}
+canvas {
+border: 2px solid black;
+background: white;
+}
+button {
+position: fixed;
+height: 50px;
+width: 50px;
+}
+
+
+#hptext {
+color: red;
+position: fixed;
+top: 700px;
+left: 200px;
+text-shadow:
+        -1px -1px 0 black,
+         0px -1px 0 black,
+         1px -1px 0 black,
+        -1px  0px 0 black,
+         1px  0px 0 black,
+        -1px  1px 0 black,
+         0px  1px 0 black,
+         1px  1px 0 black;
+}
+#wavetext {
+color: white;
+position: fixed;
+top: 700px;
+left: 200px;
+text-shadow:
+        -1px -1px 0 black,
+         0px -1px 0 black,
+         1px -1px 0 black,
+        -1px  0px 0 black,
+         1px  0px 0 black,
+        -1px  1px 0 black,
+         0px  1px 0 black,
+         1px  1px 0 black;
+}
+.pointext {
+color: yellow;
+position: fixed;
+top: 0;
+left: 5;
+font-Size: 26px;a
+opacity: 1;
+text-shadow:
+        -1px -1px 0 black,
+         0px -1px 0 black,
+         1px -1px 0 black,
+        -1px  0px 0 black,
+         1px  0px 0 black,
+        -1px  1px 0 black,
+         0px  1px 0 black,
+         1px  1px 0 black;
+}
+
+
+</style>
+</head>
+<body>
+<canvas id="canvas" width="375px" height="660px"></canvas>
+<button id="left" style="top: 690px; left: 20px;">⬅️</button>
+<button id="right" style="top: 690px; left: 140px;">➡️</button>
+<button id="down" style="top: 690px; left: 80px;">⬇️</button>
+<button id="up" style="top: 630px; left: 80px;">⬆️</button>
+<button id="punch" style="top: 660px; left: 270px; height: 80px; width: 80px; background: red;">Punch</button>
+<div id="hptext">HP: 1000</div>
+<h2 id="wavetext">WAVE 1</h2>
+<div id="poin" class="pointext">Poin: 0</div>
+
+<script>
+let canvas = document.getElementById("canvas")
+let ctx = canvas.getContext("2d")
+let direction = 1;
+let wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+let hit = false
+let hitonce = false
+let poin = 0
+
+//documents
+let pointext = document.getElementById("poin")
+let hptext = document.getElementById("hptext")
+let wavetext = document.getElementById("wavetext")
+
+
+let player = {
+x: 300,
+y: 590,
+width: 30,
+height: 30,
+hp: 9900,
+}
+
+let hitbox = {
+x: 0,
+y: 0,
+width: 30,
+height: 30,
+}
+
+let enemytype = [
+{
+x: 0,
+y: 0,
+width: 30,
+height: 30,
+background: "red",
+knockresis: 30,
+speed: 50, //pixel per detik
+hp: 100,
+reward: 100,
+},
+{
+x: 0,
+y: 0,
+width: 26,
+height: 26,
+background: "yellow",
+knockresis: 23,
+speed: 80,
+hp: 80,
+reward: 120,
+},
+{
+x: 0,
+y: 0,
+width: 35,
+height: 35,
+background: "red",
+knockresis: 88,
+speed: 30,
+hp: 300,
+reward: 180,
+}
+];
+
+let waves = [
+{
+wave: 1,
+enemys: 3,
+enemy1: 0,
+amount1: 5,
+
+},
+{
+wave: 2,
+enemys: 1,
+enemy1: 1,
+amount1: 3,
+},
+{
+wave: 3,
+enemys: 1,
+enemy1: 0,
+amount1: 15,
+},
+{
+wave: 4,
+enemys: 2,
+enemy1: 0,
+amount1: 10,
+enemy2: 2,
+amount2: 3,
+},
+{
+wave: 5,
+enemys: 1,
+enemy1: 1,
+amount1: 15,
+}
+]
+
+
+enemy = []
+
+let mousedown = false
+let down = document.getElementById("down")
+down.addEventListener("pointerdown", function() {
+mousedown = true
+direction = 1
+});
+down.addEventListener("pointerup", function() {
+mousedown = false
+});
+
+let mouseleft = false
+let left = document.getElementById("left")
+left.addEventListener("pointerdown", function() {
+mouseleft = true
+direction = 2
+});
+left.addEventListener("pointerup", function() {
+mouseleft = false
+});
+
+let mouseright = false
+let right = document.getElementById("right")
+right.addEventListener("pointerdown", function() {
+mouseright = true
+direction = 3
+});
+right.addEventListener("pointerup", function() {
+mouseright = false
+});
+
+let mouseup = false
+let up = document.getElementById("up")
+up.addEventListener("pointerdown", function() {
+mouseup = true
+direction = 4
+});
+up.addEventListener("pointerup", function() {
+mouseup = false
+});
+
+// the game
+let lasttime = 0
+function game(currentTime) {
+let deltatime = (currentTime - lasttime) / 1000
+
+lasttime = currentTime
+
+update(deltatime)
+
+draw();
+
+requestAnimationFrame(game);
+}
+wave();
+requestAnimationFrame(game);
+
+function update(deltatime) {
+enemymove(deltatime);
+movement(deltatime);
+touchcheck();
+}
+
+// wave
+let currentwave = 1
+async function wave() {
+for (let i = 0; i < waves.length; i++) {
+for (let e = 1; e < waves[i].enemys + 1; e++) {
+for (let z = 0; z < waves[i]["amount" + e]; z++) {
+enemytype[waves[i]["enemy" + e]].x = Math.floor(Math.random() * 365)
+enemytype[waves[i]["enemy" + e]].y = Math.floor(Math.random() * 100)
+enemy.push({...enemytype[waves[i]["enemy" + e]]});
+await wait(200)
+} //loop3
+} // loop2
+while (enemy.length !== 0) {
+await wait(100)
+console.log(enemy)
+console.log("Wave in progress")
+}
+console.log("Wave Completed")
+wavetext.innerText = "Bersiap"
+await wait(5000)
+currentwave += 1
+wavetext.innerText = "WAVE " + currentwave
+} // loop1
+console.log("+1000 aura")
+wavetext.innerText = "Ez win"
+} // func
+
+
+// Collision / HIT
+let selected = 0
+let totalamount = 0
+let poindisplay = 0
+async function touchcheck() {
+for (let i = 0; i < enemy.length; i ++) {
+if (player.x < enemy[i].x + enemy[i].width &&
+        player.x + player.width > enemy[i].x &&
+        player.y < enemy[i].y + enemy[i].height &&
+        player.y + player.height > enemy[i].y) {
+        player.hp -= enemy[i].hp
+        poin += enemy[i].reward
+        poineffect(enemy[i].reward)
+        poinpopup(enemy[i].reward, enemy[i].x, enemy[i].y)
+        enemy.splice(i, 1)
+        continue
+}
+if (hitbox.x < enemy[i].x + enemy[i].width &&
+        hitbox.x + hitbox.width > enemy[i].x &&
+        hitbox.y < enemy[i].y + enemy[i].height &&
+        hitbox.y + hitbox.height > enemy[i].y && hit && hitonce == false) {
+        
+        hitonce = true
+        enemy[i].hp -= 50
+        if (enemy[i].hp <= 0) {
+        poin += enemy[i].reward
+        poinpopup(enemy[i].reward, enemy[i].x, enemy[i].y)
+        poineffect(enemy[i].reward)
+        enemy.splice(i, 1)
+        } else {
+        selected = i
+        for (let e = 100; e > 0; e--) {
+        enemy[selected].y -= e / enemy[i].knockresis
+        await wait(10)
+        }
+        
+        }
+        
+        }
+} //loop
+document.getElementById("hptext").innerText = "HP: " + player.hp
+if (player.hp <= 0) {
+alert("KAMU MATI, untuk sementara tombol restart hilang(dicuri kemalasan)")
+}
+hptext.innerText = "HP: " + player.hp
+} //func
+async function poineffect(amount) {
+for (let i = 0; i < amount; i++) {
+totalamount += 1
+pointext.innerText = "Poin: " + totalamount
+for (let e = 26; e < 28; e++) {
+pointext.style.fontSize = e
+await wait(1)
+}
+for (let e = 28; e > 26; e--) {
+pointext.style.fontSize = e
+await wait(1)
+}
+}
+}
+async function poinpopup(amount, x, y) {
+const popup = document.createElement("poinpopup")
+popup.textContent = "+ " + amount
+popup.className = "pointext"
+popup.style.left = x
+popup.style.top = y
+document.body.appendChild(popup)
+for (let i = 100; i > 0; i--) {
+popup.style.opacity = i / 100
+popup.style.top = y -= 0.3
+await wait(10)
+}
+popup.remove()
+}
+
+
+function draw() {
+ctx.clearRect(0, 0, canvas.width, canvas.height);
+if (hit == true) {
+ctx.fillStyle = "red";
+ctx.fillRect(hitbox.x, hitbox.y, hitbox.width, hitbox.height)
+}
+ctx.fillStyle = "blue";
+ctx.fillRect(player.x, player.y, player.width, player.height);
+for (let i = 0; i < enemy.length; i++) {
+ctx.fillStyle = enemy[i].background;
+ctx.fillRect(enemy[i].x, enemy[i].y, enemy[i].width, enemy[i].height);
+ctx.fillStyle = "black";
+ctx.fillText(enemy[i].hp, enemy[i].x + 6, enemy[i].y + 18)
+
+} // loop
+    if (direction == 1) {
+    ctx.fillText("⬇️", player.x + 9, player.y + 48);
+    } else if (direction == 4) {
+    ctx.fillText("⬆️", player.x + 9, player.y - 10);
+    } else if (direction == 2) {
+    ctx.fillText("⬅️", player.x - 20, player.y + 19);
+    } else if (direction == 3) {
+    ctx.fillText("➡️", player.x + 36, player.y + 18);
+    }
+}
+
+// enemy movement
+function enemymove(deltatime) {
+for (let i = 0; i < enemy.length; i++) {
+if (player.x > enemy[i].x) {
+enemy[i].x += enemy[i].speed * deltatime
+} else if (player.x < enemy[i].x) {
+enemy[i].x -= enemy[i].speed * deltatime
+}
+if (player.y > enemy[i].y) {
+enemy[i].y += enemy[i].speed * deltatime
+} else if (player.y < enemy[i].y) {
+enemy[i].y -= enemy[i].speed * deltatime
+} 
+} //loop
+} //func
+
+function movement(deltatime) {
+if (mousedown) {
+player.y += 60 * deltatime
+}
+if (mouseup) {
+player.y -= 60 * deltatime
+}
+if (mouseleft) {
+player.x -= 60 * deltatime
+}
+if (mouseright) {
+player.x += 60 * deltatime
+}
+}
+let cooldown = false
+let punch = document.getElementById("punch")
+punch.addEventListener("click", async function() {
+if (direction == 1) {
+hitbox.x = player.x
+hitbox.y = player.y + 30
+} else if (direction == 2) {
+hitbox.x = player.x - 30
+hitbox.y = player.y
+} else if (direction == 3) {
+hitbox.x = player.x + 30
+hitbox.y = player.y
+} else if (direction == 4){
+hitbox.x = player.x
+hitbox.y = player.y - 30
+}
+if (cooldown == false) {
+cooldown = true
+hit = true
+await wait(100)
+hit = false
+await wait(500)
+hitonce = false
+cooldown = false
+}
+});
+</script>
+</body>
+</html>
