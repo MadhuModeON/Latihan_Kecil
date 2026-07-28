@@ -1,6 +1,11 @@
 <!doctype html>
 <head>
 <style>
+html, body {
+    overflow: hidden;
+    touch-action: none;
+    user-select: none;
+}
 canvas {
 border: 2px solid black;
 background: white;
@@ -112,20 +117,7 @@ background: "red",
 
 let arrows = []
 let megalovania = [
-{actions: [left, right],
-wait: 100},
-{actions: [left],
-wait: 100},
-{actions: [left, right],
-wait: 100},
-{actions: [left, right, up, down],
-wait: 300},
-{actions: [up],
-wait: 1000},
-{actions: [up],
-wait: 1000},
-{actions: [up],
-wait: 1000},
+//buat dengan rhyme maker
 ]
 
 const song1 = new Audio("MEGALOVANIA.mp3")
@@ -138,7 +130,7 @@ playsong()
 for (let i = 100; i < 0; i--) {
 startbtn.style.opacity = i / 100
 }
-await wait(1000)
+
 song1.play()
 }
 });
@@ -181,7 +173,7 @@ requestAnimationFrame(game)
 
 function arrowfall(deltatime) {
 arrows.forEach(arrows => {
-arrows.y += 120 * deltatime
+arrows.y += 300 * deltatime
 });
 }
 
