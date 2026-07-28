@@ -1,0 +1,241 @@
+<!doctype html>
+<head>
+<style>
+html, body {
+    overflow: hidden;
+    touch-action: none;
+    user-select: none;
+}
+canvas {
+border: 2px solid black;
+background: white;
+position: fixed;
+opacity: 1;
+top: -5;
+left: 282px;
+}
+button {
+width: 210px;
+height: 300px;
+opacity: 0.08;
+background: purple;
+position: fixed;
+border: 1px solid black;
+top: -5;
+left: 0;
+}
+.menu {
+width: 170px;
+height: 40px;
+background: blue;
+border: 2px solid black;
+position: fixed;
+font-Size: 33px;
+color: white;
+text-align: center;
+top: 50;
+left: 50;
+}
+</style>
+</head>
+<body>
+<div>Cubic Mania</div>
+<canvas id="game" width="260px" height="300px"></canvas>
+<button id="left"></button>
+<button id="up" style="left: 210px; background: green;"></button>
+<button id="down" style="left: 420px; background: cyan;"></button>
+<button id="right" style="left: 630px; background: red;"></button>
+<div class="menu" id="start">Start</div>
+<div class="menu" id="copy" style="height: 20px; width: 70px; font-Size: 17px; top: 270; left: 0;">copy</div>
+<div id="poin">Poin: 0</div>
+<script>
+let canvas = document.getElementById("game")
+ctx = canvas.getContext("2d")
+let wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+let poin = 0
+let arrow = [
+{
+x: 5,
+y: 240,
+width: 50,
+height: 50,
+background: "purple",
+},
+{
+x: 70,
+y: 240,
+width: 50,
+height: 50,
+background: "green",
+},
+{
+x: 135,
+y: 240,
+width: 50,
+height: 50,
+background: "cyan",
+},
+{
+x: 200,
+y: 240,
+width: 50,
+height: 50,
+background: "red",
+}
+]
+
+let fallarrow = [
+{
+x: 5,
+y: -50,
+width: 50,
+height: 50,
+background: "purple",
+},
+{
+x: 70,
+y: -50,
+width: 50,
+height: 50,
+background: "green",
+},
+{
+x: 135,
+y: -50,
+width: 50,
+height: 50,
+background: "cyan",
+},
+{
+x: 200,
+y: -50,
+width: 50,
+height: 50,
+background: "red",
+}
+]
+
+
+let arrows = []
+
+const song1 = new Audio("MEGALOVANIA.mp3")
+let startbtn = document.getElementById("start")
+let active = false
+startbtn.addEventListener("click", async function() {
+if (active == false) {
+active = true
+startbtn.style.top = -500
+await wait(0)
+song1.play()
+}
+});
+
+
+function right() {
+arrows.push({...fallarrow[0]})
+
+}
+function up() {
+arrows.push({...fallarrow[1]})
+
+}
+function left() {
+arrows.push({...fallarrow[2]})
+
+}
+function down() {
+arrows.push({...fallarrow[3]})
+
+}
+
+
+let lasttime = 0
+function game(currentTime) {
+let deltatime = (currentTime - lasttime) / 1000
+lasttime = currentTime
+arrowfall(deltatime)
+draw()
+requestAnimationFrame(game)
+}
+requestAnimationFrame(game)
+
+function arrowfall(deltatime) {
+arrows.forEach(arrows => {
+arrows.y += 120 * deltatime
+});
+}
+
+function draw() {
+ctx.clearRect(0, 0, canvas.width, canvas.height)
+for (let i = 0; i < arrow.length; i++) {
+ctx.fillStyle = arrow[i].background
+ctx.fillRect(arrow[i].x, arrow[i].y, arrow[i].width, arrow[i].height)
+ctx.strokeRect(arrow[i].x, arrow[i].y, arrow[i].width, arrow[i].height)
+}
+arrows.forEach(arrows => {
+ctx.fillStyle = arrows.background
+ctx.fillRect(arrows.x, arrows.y, arrows.width, arrows.height)
+ctx.strokeRect(arrows.x, arrows.y, arrows.width, arrows.height)
+});
+}
+let lastnote = 0
+let currenttime = Date.now();
+let timeout = null;
+
+let selected = []
+
+let lastTime = 0
+async function add(select) {
+if (!selected.includes(select)) {
+selected.push(select)
+}
+clearTimeout(timeout)
+
+timeout = setTimeout(function() {
+currenttime = Date.now();
+let elapsed = currenttime - lastnote
+console.log(currenttime)
+arrows.push("{actions: [" + selected +"], wait: " + elapsed + "}, ")
+console.log(arrows)
+lastnote = currenttime
+selected.length = 0
+}, 20)
+
+}
+
+upbtn = document.getElementById("up")
+downbtn = document.getElementById("down")
+leftbtn = document.getElementById("left")
+rightbtn = document.getElementById("right")
+
+let firsttime = true
+upbtn.addEventListener("pointerdown", function() {
+add("up")
+});
+
+downbtn.addEventListener("pointerdown", function() {
+add("down")
+});
+
+leftbtn.addEventListener("pointerdown", function() {
+add("left")
+});
+
+rightbtn.addEventListener("pointerdown", function() {
+add("right")
+});
+
+let copybtn = document.getElementById("copy");
+
+copybtn.addEventListener("click", async function () {
+    try {
+        await navigator.clipboard.writeText(arrows.join(""));
+        alert("Chart berhasil disalin!");
+    } catch (err) {
+        alert("Gagal menyalin.");
+    }
+});
+
+</script>
+</body>
+</html>
