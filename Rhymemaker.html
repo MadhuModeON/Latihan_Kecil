@@ -12,7 +12,7 @@ background: white;
 position: fixed;
 opacity: 1;
 top: -5;
-left: 282px;
+left: 290px;
 }
 button {
 width: 210px;
@@ -118,7 +118,7 @@ background: "red",
 
 let arrows = []
 
-const song1 = new Audio("MEGALOVANIA.mp3")
+const song1 = new Audio("Stay With Me.mp3")
 let startbtn = document.getElementById("start")
 let active = false
 startbtn.addEventListener("click", async function() {
@@ -131,39 +131,19 @@ song1.play()
 });
 
 
-function right() {
-arrows.push({...fallarrow[0]})
 
-}
-function up() {
-arrows.push({...fallarrow[1]})
-
-}
-function left() {
-arrows.push({...fallarrow[2]})
-
-}
-function down() {
-arrows.push({...fallarrow[3]})
-
-}
 
 
 let lasttime = 0
 function game(currentTime) {
 let deltatime = (currentTime - lasttime) / 1000
 lasttime = currentTime
-arrowfall(deltatime)
 draw()
 requestAnimationFrame(game)
 }
 requestAnimationFrame(game)
 
-function arrowfall(deltatime) {
-arrows.forEach(arrows => {
-arrows.y += 120 * deltatime
-});
-}
+
 
 function draw() {
 ctx.clearRect(0, 0, canvas.width, canvas.height)
@@ -178,29 +158,21 @@ ctx.fillRect(arrows.x, arrows.y, arrows.width, arrows.height)
 ctx.strokeRect(arrows.x, arrows.y, arrows.width, arrows.height)
 });
 }
-let lastnote = 0
+
 let currenttime = Date.now();
 let timeout = null;
 
 let selected = []
-
-let lastTime = 0
-async function add(select) {
+function add(select) {
 if (!selected.includes(select)) {
-selected.push(select)
+selected.push(select);
 }
 clearTimeout(timeout)
-
 timeout = setTimeout(function() {
-currenttime = Date.now();
-let elapsed = currenttime - lastnote
-console.log(currenttime)
-arrows.push("{actions: [" + selected +"], wait: " + elapsed + "}, ")
+arrows.push({actions: [...selected], time: (song1.currentTime * 1000)});
 console.log(arrows)
-lastnote = currenttime
-selected.length = 0
-}, 20)
-
+selected.length = 0;
+}, 5)
 }
 
 upbtn = document.getElementById("up")
@@ -208,7 +180,6 @@ downbtn = document.getElementById("down")
 leftbtn = document.getElementById("left")
 rightbtn = document.getElementById("right")
 
-let firsttime = true
 upbtn.addEventListener("pointerdown", function() {
 add("up")
 });
@@ -229,7 +200,8 @@ let copybtn = document.getElementById("copy");
 
 copybtn.addEventListener("click", async function () {
     try {
-        await navigator.clipboard.writeText(arrows.join(""));
+    let json = JSON.stringify(arrows)
+        await navigator.clipboard.writeText(json);
         alert("Chart berhasil disalin!");
     } catch (err) {
         alert("Gagal menyalin.");
@@ -237,5 +209,6 @@ copybtn.addEventListener("click", async function () {
 });
 
 </script>
+
 </body>
 </html>
