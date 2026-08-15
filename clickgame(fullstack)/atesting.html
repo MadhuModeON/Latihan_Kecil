@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+<head>
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+>
+<style>
+html, body {
+    overflow: hidden;
+    touch-action: none;
+    user-select: none;
+}
+#button {
+position: absolute;
+left: 50px;
+top: 500px;
+width: 300px;
+height: 40px;
+}
+#savebutton {
+position: absolute;
+left: 280px;
+top: 730px;
+width: 120px;
+height: 40px;
+background: blue;
+color: white;
+border: 2px solid black;
+text-align: center;
+font-Size: 32px;
+}
+</style>
+</head>
+<body>
+<h1 id="teks">Berber patapim</h1>
+<button id="button">+1 Poin</button>
+<div id="savebutton">SAVE</div>
+<div id="pointext">0</div>
+<script>
+let wait = ms => new Promise(resolve => setTimeout(resolve, ms))
+let button = document.getElementById("button");
+let savebtn = document.getElementById("savebutton");
+let player = {
+poin: 0,
+}
+function savedata() {
+fetch("/save", {
+method: "POST"
+})
+}
+
+function loaddata() {
+fetch("/load", {
+method: "GET"
+})
+.then(response => response.json())
+.then(data => {
+player = data;
+update();
+});
+}
+
+function update() {
+document.getElementById("pointext").innerText = player.poin;
+}
+loaddata()
+update()
+let issaved = false;
+savebtn.addEventListener("click", async function() {
+if (!issaved) {
+issaved = true;
+savedata()
+console.log("Data saved")
+savebtn.style.background = "lightblue";
+savebtn.innerText = "SAVED!";
+await wait(5100);
+savebtn.innerText = "SAVE";
+savebtn.style.border = "2px solid black";
+issaved = false;
+}
+});
+
+button.addEventListener("click", function() {
+console.log("click")
+fetch("/click", {
+method: "POST"
+})
+.then(response => response.text())
+.then(data => {
+player.poin = data;
+update();
+});
+
+});
+setInterval(function() {
+savedata();
+console.log("Data Saved")
+}, 10000)
+</script>
+</body>
+</html>
