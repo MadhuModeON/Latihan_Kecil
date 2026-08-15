@@ -1,0 +1,980 @@
+<!doctype html>
+<head>
+<style>
+html, body {
+    overflow: hidden;
+    touch-action: none;
+    user-select: none;
+}
+canvas {
+border: 2px solid black;
+background: white;
+position: fixed;
+opacity: 1;
+top: -5px;
+left: 290px;
+}
+button {
+width: 210px;
+height: 300px;
+opacity: 0.08;
+background: purple;
+position: fixed;
+border: 1px solid black;
+top: -5px;
+left: 0px;
+}
+.menu {
+width: 170px;
+height: 40px;
+background: blue;
+border: 2px solid white;
+position: absolute;
+font-Size: 33px;
+color: white;
+text-align: center;
+top: 10px;
+left: 320px;
+cursor: pointer;
+}
+.text {
+position: fixed;
+text-align: center;
+color: white;
+text-shadow:
+        -1px -1px 0 black,
+         0px -1px 0 black,
+         1px -1px 0 black,
+        -1px  0px 0 black,
+         1px  0px 0 black,
+        -1px  1px 0 black,
+         0px  1px 0 black,
+         1px  1px 0 black;
+}
+.endstattxt {
+text-align: left;
+color: black;
+font-Size: 90px;
+margin: 3px;
+display: none;
+position: absolute;
+top: 0px;
+text-shadow:
+        -1px -1px 0 white,
+         0px -1px 0 white,
+         1px -1px 0 white,
+        -1px  0px 0 white,
+         1px  0px 0 white,
+        -1px  1px 0 white,
+         0px  1px 0 white,
+         1px  1px 0 white;
+}
+.stat {
+font-Size: 10px;
+}
+#songmenu {
+width: 580px;
+height: 280px;
+background: black;
+border: 2px solid white;
+position: fixed;
+color: white;
+text-align: center;
+text-shadow:
+        -1px -1px 0 black,
+         0px -1px 0 black,
+         1px -1px 0 black,
+        -1px  0px 0 black,
+         1px  0px 0 black,
+        -1px  1px 0 black,
+         0px  1px 0 black,
+         1px  1px 0 black;
+top: 0px;
+left: -580px;
+display: none;
+
+}
+.songmenubtn {
+width: 260px;
+height: 22px;
+background: black;
+border: 2px solid white;
+color: white;
+text-align: center;
+margin: 5px;
+cursor: pointer;
+text-shadow:
+        -1px -1px 0 black,
+         0px -1px 0 black,
+         1px -1px 0 black,
+        -1px  0px 0 black,
+         1px  0px 0 black,
+        -1px  1px 0 black,
+         0px  1px 0 black,
+         1px  1px 0 black;
+}
+#combo {
+text-align: center;
+position: fixed;
+top: 100px;
+left: 413px;
+font-Size: 25px;
+}
+#endstats {
+width: 823px;
+height: 380px;
+background: black;
+border: 2px solid white;
+position: fixed;
+font-Size: 20px;
+color: white;
+text-align: center;
+text-shadow:
+        -1px -1px 0 black,
+         0px -1px 0 black,
+         1px -1px 0 black,
+        -1px  0px 0 black,
+         1px  0px 0 black,
+        -1px  1px 0 black,
+         0px  1px 0 black,
+         1px  1px 0 black;
+top: 400px;
+left: 5px;
+display: block;
+}
+.songstats {
+width: 170px;
+height: 15px;
+background: white;
+position: absolute;
+font-Size: 14px;
+}
+.icon {
+width: 150px;
+height: 150px;
+position: absolute;
+left: 330px;
+top: 60px;
+display: none;
+}
+#songs {
+width: 270px;
+height: 280px;
+overflow-y: scroll;
+border: 3px solid white;
+}
+</style>
+</head>
+<body>
+
+<div>Cubic Mania</div>
+<canvas id="game" width="260" height="300"></canvas>
+<div id="combo">0</div>
+<div class="stat" id="poin">Poin: 0</div>
+<div class="stat" id="accuracy">Accuracy: 0%</div>
+<div class="stat" id="miss">Miss: 0</div>
+<button id="left"></button>
+<button id="up" style="left: 210px; background: green;"></button>
+<button id="down" style="left: 420px; background: cyan;"></button>
+<button id="right" style="left: 630px; background: red;"></button>
+<div class="menu" style="left: 600px; top: 20px; width: 200px; height: 30px; font-Size: 22px; border: 2px solid black;" id="openmenu">Select Song</div>
+<div class="text"style="top: 0px; left: 560px; font-Size: 14px;" id="selectedsong">Musik: MEGALOVANIA</div>
+<div id="endstats">
+<h2 id="headtext">Stats</h2>
+<div class="endstattxt" id="poinstat">Poin: </div>
+<div class="endstattxt" id="accustat" style="top: 50px; color: blue">Accuracy: </div>
+<div class="endstattxt" id="missstat" style="top: 90px; color: grey;">Misses: </div>
+<div class="endstattxt" id="combostat" style="top: 130px;">Highest Combo: </div>
+<div class="endstattxt" id="rankstat" style="top: 170px;">RANK: </div>
+<div class="menu" id="close" style="width: 200px; height: 20px; top: 260px; left: 400px; font-Size: 14px;">Tutup</div>
+<div class="menu" id="restart" style="width: 200px; height: 20px; top: 260px; left: 610px; font-Size: 14px;">Ulang</div>
+</div>
+<div id="songmenu">
+<div class="menu" id="start">Start</div>
+<div id="songs">
+
+</div>
+<div class ="songmenubtn" id="selectmusic" style="position: absolute; top: 250px; left: 267px; background: blue;">Pilih</div>
+<div class="songstats" id="hipoin" style="top: 220px; left: 235px;">Highest Poin: 0</div>
+<div class="songstats" id="hiaccu" style="top: 237px; left: 235px;">Highest Accuracy: 0.000%</div>
+<div class="songstats" id="hicombo" style="top: 220px; left: 410px;">Highest Combo: 0</div>
+<div class="songstats" id="playedtimes" style="top: 237px; left: 410px;">Played 0 times</div>
+</div>
+
+<script>
+let canvas = document.getElementById("game")
+ctx = canvas.getContext("2d")
+let wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+let poin = 0
+let accuracy = 0
+let hits = 0
+let total = 0
+let combo = 0
+let miss = 0
+let hicombo = 0
+let menubtn = document.getElementById("openmenu")
+let menu = document.getElementById("songmenu")
+let selectbtn = document.getElementById("selectmusic")
+let closestats = document.getElementById("close")
+let restartmusic = document.getElementById("restart")
+let chart = 0;
+
+function loadchart(selected) {
+console.log("chart diambil")
+    fetch(selected)
+    .then(res => res.json())
+    .then(data => {
+        console.log(data)
+        chart = data
+        
+    })
+    .catch(err => {
+        console.log(err);
+    });
+}
+let arrow = [
+{
+x: 5,
+y: 240,
+width: 50,
+height: 50,
+background: "purple",
+},
+{
+x: 70,
+y: 240,
+width: 50,
+height: 50,
+background: "green",
+},
+{
+x: 135,
+y: 240,
+width: 50,
+height: 50,
+background: "cyan",
+},
+{
+x: 200,
+y: 240,
+width: 50,
+height: 50,
+background: "red",
+},
+]
+let whitearrow = [
+{
+x: 5,
+y: 240,
+width: 50,
+height: 50,
+background: "white",
+opacity: 0,
+},
+{
+x: 70,
+y: 240,
+width: 50,
+height: 50,
+background: "white",
+opacity: 0,
+},
+{
+x: 135,
+y: 240,
+width: 50,
+height: 50,
+background: "white",
+opacity: 0,
+},
+{
+x: 200,
+y: 240,
+width: 50,
+height: 50,
+background: "white",
+opacity: 0,
+}
+]
+let fallarrow = [
+{
+x: 5,
+y: -50,
+width: 50,
+height: 50,
+background: "purple",
+},
+{
+x: 70,
+y: -50,
+width: 50,
+height: 50,
+background: "green",
+},
+{
+x: 135,
+y: -50,
+width: 50,
+height: 50,
+background: "cyan",
+},
+{
+x: 200,
+y: -50,
+width: 50,
+height: 50,
+background: "red",
+}
+]
+
+let arrows = []
+let clicksound = new Audio("button.mp3")
+let selectsound = new Audio("select.mp3")
+let stats = [
+{
+name: "MEGALOVANIA",
+poin: 0,
+accuracy: 0,
+played: 0,
+hicombo: 0,
+speed: 180,
+},
+{
+name: "Yara Yara Phonk",
+poin: 0,
+accuracy: 0,
+played: 0,
+hicombo: 0,
+speed: 180,
+},
+{
+name: "AURA",
+poin: 0,
+accuracy: 0,
+played: 0,
+hicombo: 0,
+speed: 200,
+},
+{
+name: "Bad Apple",
+poin: 0,
+accuracy: 0,
+played: 0,
+hicombo: 0,
+speed: 250,
+},
+{
+name: "Stay With Me",
+poin: 0,
+accuracy: 0,
+played: 0,
+hicombo: 0,
+speed: 280,
+},
+{
+name: "Field of Memories",
+poin: 0,
+accuracy: 0,
+played: 0,
+hicombo: 0,
+speed: 300,
+},
+{
+name: "At the Speed of Light",
+poin: 0,
+accuracy: 0,
+played: 0,
+hicombo: 0,
+speed: 350,
+},
+{
+name: "MEGALOVANIA (Camellia Remix)",
+poin: 0,
+accuracy: 0,
+played: 0,
+hicombo: 0,
+speed: 400,
+},
+{
+name: "Flamewall",
+poin: 0,
+accuracy: 0,
+played: 0,
+hicombo: 0,
+speed: 480,
+},
+{
+name: "Galaxy Collapse",
+poin: 0,
+accuracy: 0,
+played: 0,
+hicombo: 0,
+speed: 480,
+},
+{
+name: "GHOST",
+poin: 0,
+accuracy: 0,
+played: 0,
+hicombo: 0,
+speed: 490,
+},
+{
+name: "Freedom Dive",
+poin: 0,
+accuracy: 0,
+played: 0,
+hicombo: 0,
+speed: 500,
+},
+]
+let megalobtn = document.getElementById("MEGALOVANIA");
+let badapplebtn = document.getElementById("Bad Apple");
+let megaloremixbtn = document.getElementById("MEGALOVANIA (Camellia Remix)");
+let selectedstats = stats[stats.findIndex(stat => stat.name === "MEGALOVANIA")];
+let selectedsound = (selectedstats.name + "music");
+let startbtn = document.getElementById("start");
+let selectedmusic = selectedstats.name + "json";
+
+function loadstats() {
+if (JSON.parse(localStorage.getItem("stats"))) {
+stats = JSON.parse(localStorage.getItem("stats"));
+console.log(stats[3].poin);
+console.log("stats load");
+}
+}
+function savestats() {
+localStorage.setItem("stats", JSON.stringify(stats));
+}
+
+async function startgame() {
+if (selectedmusic !== 0) {
+await loadchart(selectedmusic);
+stopsound(selectedsound);
+clicksound.play();
+
+for (let i = 0; i > -580; i = (i - 1) * 1.02) {
+menu.style.left = i + "px";
+await wait(10);
+}
+clearicons();
+let music = new Audio(selectedstats.name + ".mp3");
+selectedsound.play();
+selectedsound.volume = 0;
+playsong();
+await wait((290 / selectedstats.speed) * 1000);
+music.play();
+music.volume = 1;
+await wait((selectedsound.duration * 1000) + 2000);
+endscreen();
+} else {
+alert("Tolong pilih musik dulu");
+}
+}
+
+
+
+startbtn.addEventListener("click", async function() {
+startbtn.style.pointerEvents = "none";
+menubtn.style.top = -500 + "px"
+startgame();
+});
+
+let title = document.getElementById("headtext");
+let statsmenu = document.getElementById("endstats");
+let pointext = document.getElementById("poinstat");
+let accutext = document.getElementById("accustat");
+let misstext = document.getElementById("missstat");
+let combotext = document.getElementById("combostat");
+let ranktext = document.getElementById("rankstat");
+async function endscreen() {
+gamesave();
+savestats();
+pointext.style.display = "none";
+accutext.style.display = "none";
+misstext.style.display = "none";
+combotext.style.display = "none";
+ranktext.style.display = "none";
+ranktext.style.color = "black";
+pointext.innerText = "Poin: ";
+accutext.innerText = "Accuracy: ";
+misstext.innerText = "Misses: ";
+combotext.innerText = "Highest Combo: ";
+ranktext.innerText = "RANK: ";
+headtext.innerText = selectedstats.name;
+closestats.style.pointerEvents = "none";
+restartmusic.style.pointerEvents = "none";
+for (let i = 300; i > 1; i /= 1.02) {
+statsmenu.style.top = i + "px";
+console.log("anim");
+await wait(10);
+}
+menu.style.display = "none";
+closestats.style.pointerEvents = "auto";
+restartmusic.style.pointerEvents = "auto";
+anim1(pointext, 40);
+console.log("tes");
+await wait(1000)
+for (let i = 1; i < poin; i = ( i + 1) * 1.02) {
+pointext.innerText = "Poin: " + Math.floor(i);
+await wait(10);
+}
+pointext.innerText = "Poin: " + Math.floor(poin);
+await wait(200);
+anim1(accutext, 30);
+await wait(1200);
+accutext.innerText = "Accuracy: " + accuracy.toFixed(3) + "%";
+await wait(200);
+anim1(misstext, 30);
+await wait(1200);
+misstext.innerText = "Misses: " + miss;
+await wait(200);
+anim1(combotext, 30);
+await wait(1200);
+combotext.innerText = "Highest Combo: " + hicombo;
+await wait(200);
+anim1(ranktext, 80);
+await wait(1200);
+if (accuracy >= 99) {
+ranktext.innerText = "RANK: S";
+ranktext.style.color = "yellow";
+} else if (accuracy >= 90) {
+ranktext.innerText = "RANK: A";
+ranktext.style.color = "orange";
+} else if (accuracy >= 70) {
+ranktext.innerText = "RANK: B";
+ranktext.style.color = "blue";
+} else if (accuracy >= 55) {
+ranktext.innerText = "RANK: C";
+ranktext.style.color = "green";
+} else if (accuracy >= 40) {
+ranktext.innerText = "RANK: D";
+ranktext.style.color = "grey";
+} else if (accuracy >= 20) {
+ranktext.innerText = "RANK: F";
+ranktext.style.color = "red";
+} else {
+ranktext.innerText = "Skibidi toilet";
+ranktext.style.color = "Magenta";
+}
+
+}
+async function anim1(text, min) {
+text.style.display = "block";
+for (let i = 200; i > min; i--) {
+text.style.fontSize = i + "px";
+await wait(5);
+}
+}
+
+
+const actionchart = {
+left,
+up,
+down,
+right,
+}
+
+async function playsong() {
+let i = 0;
+
+const loop = setInterval(() => {
+    if (i >= chart.length) {
+        clearInterval(loop);
+        return;
+    }
+
+    if (chart[i].time < selectedsound.currentTime * 1000) {
+    chart[i].actions.forEach(action => {
+        actionchart[action]();
+        
+        });
+        i++;
+    }
+}, 1);
+
+}
+
+function right() {
+arrows.push({...fallarrow[3]});
+
+}
+function up() {
+arrows.push({...fallarrow[1]});
+
+}
+function left() {
+arrows.push({...fallarrow[0]});
+
+}
+function down() {
+arrows.push({...fallarrow[2]});
+
+}
+
+
+let lasttime = 0;
+function game(currentTime) {
+let deltatime = (currentTime - lasttime) / 1000;
+lasttime = currentTime;
+arrowfall(deltatime);
+draw();
+requestAnimationFrame(game);
+}
+requestAnimationFrame(game);
+
+function arrowfall(deltatime) {
+arrows.forEach(fallarrow => {
+fallarrow.y += selectedstats.speed * deltatime;
+if (fallarrow.y > 320) {
+arrows.splice(arrows.indexOf(fallarrow), 1);
+combo = 0;
+miss += 1;
+hits += 1;
+accu();
+}
+});
+}
+
+function draw() {
+ctx.clearRect(0, 0, canvas.width, canvas.height)
+for (let i = 0; i < arrow.length; i++) {
+ctx.globalAlpha = 1;
+ctx.fillStyle = arrow[i].background;
+ctx.fillRect(arrow[i].x, arrow[i].y, arrow[i].width, arrow[i].height);
+ctx.strokeRect(arrow[i].x, arrow[i].y, arrow[i].width, arrow[i].height);
+}
+whitearrow.forEach(arrow => {
+ctx.globalAlpha = arrow.opacity;
+ctx.fillStyle = arrow.background;
+ctx.fillRect(arrow.x, arrow.y, arrow.width, arrow.height);
+ctx.strokeRect(arrow.x, arrow.y, arrow.width, arrow.height);
+});
+arrows.forEach(arrows => {
+ctx.globalAlpha = 1;
+ctx.fillStyle = arrows.background;
+ctx.fillRect(arrows.x, arrows.y, arrows.width, arrows.height);
+ctx.strokeRect(arrows.x, arrows.y, arrows.width, arrows.height);
+});
+
+}
+
+upbtn = document.getElementById("up");
+downbtn = document.getElementById("down");
+leftbtn = document.getElementById("left");
+rightbtn = document.getElementById("right");
+
+upbtn.addEventListener("pointerdown", async function() {
+let target = arrow[1];
+let selected = false;
+arrows.forEach(fallarrows => {
+if (fallarrows.x < target.x + target.width &&
+fallarrows.x + fallarrows.width > target.x &&
+fallarrows.y < target.y + target.height &&
+fallarrows.y + fallarrows.height > target.y && selected == false && fallarrows.background && target.background == "green") {
+selected = true;
+let center = fallarrows.y + fallarrows.height / 2;
+let center2 = target.y + target.height / 2;
+let jarak = Math.abs(center - center2);
+let score = 50 - jarak;
+total += score * 2;
+combo += 1;
+hits += 1;
+accu();
+arrows.splice(arrows.indexOf(fallarrows), 1);
+poin += score;
+document.getElementById("poin").innerText = "Poin: " + Math.floor(poin);
+}
+});
+whitearrow[1].opacity = 1;
+for (let i = 10; i > 0; i--) {
+whitearrow[1].opacity = i / 10;
+await wait(3);
+}
+});
+
+downbtn.addEventListener("pointerdown", async function() {
+let target = arrow[2];
+let selected = false;
+arrows.forEach(fallarrows => {
+if (fallarrows.x < target.x + target.width &&
+fallarrows.x + fallarrows.width > target.x &&
+fallarrows.y < target.y + target.height &&
+fallarrows.y + fallarrows.height > target.y && selected == false && fallarrows.background && target.background == "cyan") {
+selected = true;
+let center = fallarrows.y + fallarrows.height / 2;
+let center2 = target.y + target.height / 2;
+let jarak = Math.abs(center - center2);
+let score = 50 - jarak;
+total += score * 2;
+combo += 1;
+hits += 1;
+accu();
+arrows.splice(arrows.indexOf(fallarrows), 1);
+poin += score;
+document.getElementById("poin").innerText = "Poin: " + Math.floor(poin);
+}
+});
+whitearrow[2].opacity = 1;
+for (let i = 10; i > 0; i--) {
+whitearrow[2].opacity = i / 10;
+await wait(3);
+}
+});
+
+
+leftbtn.addEventListener("pointerdown", async function() {
+let target = arrow[0];
+let selected = false;
+arrows.forEach(fallarrows => {
+if (fallarrows.x < target.x + target.width &&
+fallarrows.x + fallarrows.width > target.x &&
+fallarrows.y < target.y + target.height &&
+fallarrows.y + fallarrows.height > target.y && selected == false && fallarrows.background && target.background == "purple") {
+selected = true;
+let center = fallarrows.y + fallarrows.height / 2;
+let center2 = target.y + target.height / 2;
+let jarak = Math.abs(center - center2);
+let score = 50 - jarak;
+total += score * 2;
+combo += 1;
+hits += 1;
+accu();
+arrows.splice(arrows.indexOf(fallarrows), 1);
+poin += score;
+document.getElementById("poin").innerText = "Poin: " + Math.floor(poin);
+}
+});
+whitearrow[0].opacity = 1;
+for (let i = 10; i > 0; i--) {
+whitearrow[0].opacity = i / 10;
+await wait(3);
+}
+});
+
+rightbtn.addEventListener("pointerdown", async function() {
+let target = arrow[3];
+let selected = false;
+arrows.forEach(fallarrows => {
+if (fallarrows.x < target.x + target.width &&
+fallarrows.x + fallarrows.width > target.x &&
+fallarrows.y < target.y + target.height &&
+fallarrows.y + fallarrows.height > target.y && selected == false && fallarrows.background && target.background == "red") {
+selected = true;
+let center = fallarrows.y + fallarrows.height / 2;
+let center2 = target.y + target.height / 2;
+let jarak = Math.abs(center - center2);
+let score = 50 - jarak;
+arrows.splice(arrows.indexOf(fallarrows), 1);
+poin += score;
+total += score * 2;
+combo += 1;
+hits += 1;
+accu();
+document.getElementById("poin").innerText = "Poin: " + Math.floor(poin);
+}
+});
+whitearrow[3].opacity = 1;
+for (let i = 10; i > 0; i--) {
+whitearrow[3].opacity = i / 10;
+await wait(3)
+}
+});
+
+
+function accu() {
+accuracy = total / hits;
+if (combo > hicombo) {
+hicombo = combo
+}
+document.getElementById("miss").innerText = "Miss: " + miss;
+if (!isNaN(accuracy)) {
+document.getElementById("accuracy").innerText = "Accuracy: " + accuracy + "%";
+} else {
+document.getElementById("accuracy").innerText = "Accuracy: 0%";
+}
+document.getElementById("combo").innerText = combo;
+if (combo >= 1000) {
+document.getElementById("combo").style.left = 395 + "px";
+} else if (combo >= 100) {
+document.getElementById("combo").style.left = 400 + "px";
+} else if (combo >= 10) {
+document.getElementById("combo").style.left = 405 + "px";
+} else {
+document.getElementById("combo").style.left = 410 + "px";
+}
+}
+
+let isopen = false;
+menubtn.addEventListener("click", async function() {
+if (!isopen) {
+isopen = true;
+if (menu.style.display == "block") {
+startbtn.style.pointerEvents = "none";
+stopsound(selectedsound);
+clicksound.play();
+for (let i = 0; i > -580; i = (i - 1) * 1.02) {
+menu.style.left = i + "px"
+await wait(10);
+}
+selectmusic.innerText = "Pilih Salah Satu";
+clearicons();
+menu.style.display = "none";
+} else {
+clicksound.play();
+menu.style.display = "block";
+for (let i = -580; i < 0; i = (i + 1) / 1.02) {
+menu.style.left = i + "px";
+await wait(10);
+}
+startbtn.style.pointerEvents = "auto";
+}
+isopen = false;
+}
+});
+
+async function stopsound(selected) {
+clicksound.pause();
+clicksound.currentTime = 0;
+selectsound.pause();
+selectsound.currentTime = 0;
+if (selected) {
+for (let i = 100; i > 0; i--) {
+selected.volume = i / 100;
+await wait(10);
+}
+}
+for (let i = 0; i < stats.length; i++) {
+let sound = document.getElementById(stats[i].name + "music");
+sound.pause();
+sound.currentTime = 0;
+}
+}
+
+
+let poinstat = document.getElementById("hipoin");
+let accustat = document.getElementById("hiaccu");
+let combostat = document.getElementById("hicombo");
+let playedstat = document.getElementById("playedtimes");
+function showstats() {
+poinstat.innerText = "Highest Poin: " + Math.floor(selectedstats.poin);
+accustat.innerText = "Highest Accuracy: " + selectedstats.accuracy.toFixed(3) + "%";
+combostat.innerText = "Highest Combo: " + selectedstats.hicombo;
+playedstat.innerText = "Played " + selectedstats.played + " times";
+}
+function clearicons() {
+for (let i = 0; i < stats.length; i++) {
+let button = document.getElementById(stats[i].name);
+button.style.color = "white";
+button.style.border = "2px solid white";
+document.getElementById(stats[i].name + "icon").style.display = "none";
+}
+}
+let songbtns = document.getElementById("songs");
+let buttons = []
+function loadhtmls() {
+for (let i = 0; i < stats.length; i++) {
+let icon = document.createElement("img");
+icon.src = stats[i].name + ".jpg";
+icon.className = "icon";
+icon.id = stats[i].name + "icon";
+menu.appendChild(icon);
+console.log(document.getElementById(stats[i].name + "icon"));
+let sound = document.createElement("audio");
+sound.src = stats[i].name + ".mp3";
+sound.id = stats[i].name + "music";
+document.body.appendChild(sound);
+console.log(document.getElementById(stats[i].name + "music"));
+let button = document.createElement("div");
+button.id = stats[i].name;
+button.className = "songmenubtn";
+button.innerText = stats[i].name;
+songbtns.appendChild(button);
+button.addEventListener("click", function() {
+console.log("skibidi")
+musicbtn(stats[i].name);
+showstats()
+});
+console.log(document.getElementById(stats[i].name));
+}
+}
+loadhtmls();
+async function musicbtn(music) {
+selectedstats = stats[stats.findIndex(stat => stat.name === music)];
+selectedmusic = selectedstats.name + ".json";
+selectedsound = document.getElementById(selectedstats.name + "music");
+selectmusic.innerText = music;
+document.getElementById("selectedsong").innerText = "Musik: " + music;
+stopsound();
+selectsound.play();
+selectsound.currentTime = 0;
+selectedsound.volume = 1;
+selectedsound.currentTime = 0;
+selectedsound.play();
+console.log(selectedsound);
+clearicons();
+let icon = document.getElementById(selectedstats.name + "icon");
+let btn = document.getElementById(selectedstats.name);
+btn.style.border = "3px solid yellow";
+btn.style.color = "yellow";
+icon.style.display = "block";
+for (let i = 190; i < 338; i *= 1.05) {
+icon.style.left = i + "px";
+await wait(10);
+}
+icon.style.left = 331 + "px";
+}
+function gamereset() {
+poin = 0;
+accuracy = 0;
+hits = 0;
+total = 0;
+combo = 0;
+miss = 0;
+hicombo = 0;
+}
+function gamesave() {
+if (poin > selectedstats.poin) {
+selectedstats.poin = poin;
+}
+if (accuracy > selectedstats.accuracy) {
+selectedstats.accuracy = accuracy;
+}
+if (hicombo > selectedstats.hicombo) {
+selectedstats.hicombo = hicombo;
+}
+selectedstats.played += 1;
+savestats();
+}
+closestats.addEventListener("click", async function() {
+menubtn.style.pointerEvents = "none";
+closestats.style.pointerEvents = "none";
+restartmusic.style.pointerEvents = "none";
+clicksound.play();
+menubtn.style.top = 20 + "px";
+for (let i = 1; i < 300; i *= 1.07) {
+statsmenu.style.top = i + "px";
+await wait(10);
+}
+gamereset();
+accu();
+document.getElementById("poin").innerText = "Poin: " + Math.floor(poin);
+menubtn.style.pointerEvents = "auto";
+});
+restartmusic.addEventListener("click", async function() {
+menubtn.style.pointerEvents = "none";
+closestats.style.pointerEvents = "none";
+restartmusic.style.pointerEvents = "none";
+clicksound.play();
+for (let i = 1; i < 300; i *= 1.07) {
+statsmenu.style.top = i + "px";
+await wait(10);
+}
+gamereset();
+accu();
+document.getElementById("poin").innerText = "Poin: " + Math.floor(poin);
+startgame();
+});
+</script>
+</body>
+</html>
